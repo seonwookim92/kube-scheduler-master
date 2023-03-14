@@ -25,7 +25,7 @@ class RealKubeEnv(gym.Env):
         self.num_nodes = len(self.node_list)
 
         # Initialize node observation space Should be the number of nodes x 3 matrix
-        self.node_observation_space = spaces.Box(low=0, high=100, shape=(self.num_nodes, 3), dtype=int)
+        self.node_observation_space = spaces.Box(low=0, high=100, shape=(self.num_nodes * 2,), dtype=int)
 
         # Initialize the most recent pending pod observation space
         self.pod_observation_space = spaces.Box(low=0, high=100, shape=(2,), dtype=int)
@@ -118,7 +118,8 @@ class RealKubeEnv(gym.Env):
             node_cpu_util = node_rsrc["cpu"][2]
             node_memory_util = node_rsrc["memory"][2]
 
-            node_obs.append([node_cpu_util, node_memory_util])
+            # node_obs.append([node_cpu_util, node_memory_util])
+            node_obs += [node_cpu_util, node_memory_util]
 
         if debug:
             print("Node Observation: " + str(node_obs))
