@@ -60,7 +60,7 @@ class Monitor:
         if debug:
             print("Get pods in node: " + node_name)
         return_pods = []
-        pods = self.get_pods('Running')
+        _, pods = self.get_pods('Running')
         for pod in pods.items:
             if pod.spec.node_name == node_name:
                 return_pods.append(pod)
