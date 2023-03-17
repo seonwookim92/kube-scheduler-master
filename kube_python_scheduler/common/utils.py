@@ -20,4 +20,4 @@ def convert_memory_unit(size):
     elif size[-2:] == "Gi":
         return round(float(size[:-2]) * 1024 * 1024, 3)
     else:
-        raise Exception("Invalid unit")
+        raise Exception(f"Invalid unit : {size}")
