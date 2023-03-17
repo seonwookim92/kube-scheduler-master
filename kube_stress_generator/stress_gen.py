@@ -50,6 +50,37 @@ class StressGen:
 
             time.sleep(5)
 
+    def log_scenario(self, debug=False):
+        if debug:
+            print("Logging the scenario...")
+            print("This should be run before the scenario starts.")
+
+        # Open a log file to write
+        # Name should be the current time
+        log_file_path = os.path.join("logs", "log-" + str(time.time()) + ".txt")
+        log_file = open(log_file_path, "w")
+
+        # Check if it's proper to log the scenario
+        # If there is already a job running, it's not proper to log the scenario
+        if len(self.mnt.get_jobs()[0]) != 0:
+            msg = "There is a job running. Exit the logger"
+            print(msg)
+            log_file.write(msg + "\n")
+            return
+
+        while True:
+            if len(self.mnt.get_jobs()[0]) != 0:
+                start_time = time.time()
+                msg = f"Scenario & Loggin started at {start_time}"
+                print(msg)
+                log_file.write(msg + "\n")
+                break
+        
+        log_file.close()
+
+        
+            
+        scenario_start_time = t
         # After job deploying is done, monitor when all jobs are done.
         # If all jobs are done, log the end time and duration of the scenario.
         # Also log should contain all jobs with their start and end times.
