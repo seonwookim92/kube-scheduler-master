@@ -38,6 +38,7 @@ class FCFS:
             pod_name = pending_pods_name[0]
             # Get the available nodes
             available_nodes_name = self.filter.get_available_nodes_name(pod_name)
+            print(f"available_nodes : {available_nodes_name}")
             # Get the score of the available nodes
             # The more running pods a node has, the lower the score
             FCFS_output['pod'] = pod_name
@@ -48,6 +49,7 @@ class FCFS:
                     continue
 
                 pods = self.core_api.list_pod_for_all_namespaces(field_selector=f"spec.nodeName={node_name}").items
+                print(f"Pods on node {node_name}: {pods}")
                 running_pods = [pod for pod in pods if pod.status.phase == "Running"]
                 num_running_pods = len(running_pods)
 
