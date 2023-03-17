@@ -1,7 +1,12 @@
 from kubernetes import client, config
-from kube_python_scheduler.common.monitor import Monitor
-from kube_python_scheduler.common.filter import Filter
-from kube_python_scheduler.stratigies.fcfs.strategy import FCFS
+
+import os, sys
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(base_path)
+
+from common.monitor import Monitor
+from common.filter import Filter
+from stratigies.fcfs.strategy import FCFS
 
 import random
 

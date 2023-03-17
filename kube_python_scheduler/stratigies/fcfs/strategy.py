@@ -1,4 +1,9 @@
 from kubernetes import client, config
+
+import os, sys
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(base_path)
+
 from kube_python_scheduler.common.monitor import Monitor
 from kube_python_scheduler.common.filter import Filter
 

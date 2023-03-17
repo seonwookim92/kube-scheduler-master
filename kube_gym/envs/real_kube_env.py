@@ -1,13 +1,16 @@
-import os
 import gym
 from gym import spaces
 from time import sleep
 import numpy as np
 
+import os, sys
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(base_path)
+
 from kube_gym.utils.monitor import Monitor
 from kube_gym.utils.unit_matcher import *
 
-from kube_gym.scheduler.scheduler import Scheduler
+from kube_gym.scheduler import Scheduler
 
 class RealKubeEnv(gym.Env):
     def __init__(self):
@@ -39,7 +42,7 @@ class RealKubeEnv(gym.Env):
             self.idx_to_node[i] = node_name
 
         # Initialize the action space
-        self.action_space = spaces.Discrete(self.num_nodes)
+        self.action_space = spaces.Discrete(self.num_nodes + 1)
 
     def calc_reward(self, debug=False):
         # Utilization of resources on each node
@@ -161,3 +164,17 @@ class RealKubeEnv(gym.Env):
                 break
             else:
                 print("Waiting for jobs to be deleted...")
+
+if __name__ == "__main__":
+    env = RealKubeEnv()
+
+    print("real_kube_env.py is running...")
+    print(f"Node Observation Space: {env.node_observation_space}")
+    print(f"Pod Observation Space: {env.pod_observation_space}")
+    print(f"Observation Space: {env.observation_space}")
+    print(f"Action Space: {env.action_space}")
+
+    print("Observing state...")
+    state = env.observe_state(debug=True)
+    print("Calculating reward...")
+    reward = env.calc_reward(debug=True)

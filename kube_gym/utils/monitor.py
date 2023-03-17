@@ -1,4 +1,9 @@
 from kubernetes import client, config
+
+import os, sys
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(base_path)
+
 from kube_gym.utils.unit_matcher import convert_cpu_unit, convert_memory_unit
 
 class Monitor:

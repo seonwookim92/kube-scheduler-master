@@ -1,5 +1,10 @@
 from kubernetes import client, config
-from kube_python_scheduler.common.utils import convert_cpu_unit, convert_memory_unit
+
+import os, sys
+kube_python_scheduler_path = os.path.join(os.path.dirname(__file__), "..")
+sys.path.append(kube_python_scheduler_path)
+
+from common.utils import convert_cpu_unit, convert_memory_unit
 
 class Monitor:
     def __init__(self, cfg=None, sched=None):
