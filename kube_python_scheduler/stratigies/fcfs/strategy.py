@@ -49,10 +49,9 @@ class FCFS:
                     continue
 
                 # Get pods in default namespace
-                pods = self.monitor.get_pods_in_node(node_name)
-                print(f"# of Pods on node {node_name}: {len(pods)}")
-                running_pods = [pod for pod in pods if pod.status.phase == "Running"]
-                num_running_pods = len(running_pods)
+                pods_name, _ = self.monitor.get_pods_in_node(node_name)
+                print(f"Pods on node {node_name}: {pods_name}")
+                num_running_pods = len(pods_name)
 
                 node_score[node_name] = 100 - num_running_pods
 
