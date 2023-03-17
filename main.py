@@ -53,10 +53,7 @@ while True:
     if cmd == "1":
         # Start stress generator
         # Fork the process to run it in the background
-        p = mp.Process(target=run_stress_gen, args=())
-        p.start()
-        p.join()
-        p_stress_gen = p._spawn(p._args, p._initializer, None, p._target)
+        os.system("bash nohup python kube_stress_generator/main.py & > log.txt")
     elif cmd == "2":
         # Start python scheduler
         p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
@@ -83,6 +80,7 @@ while True:
 # 3. Make agent communicate with gym environment
 # 4. calloc to prevent OOM killed?
 # 5. Scheduler dynamic catch istead of waiting for 10s?
+# 6. Better way for the multiprocessing?
 
 # FURTHER
 # 1. Develop reward function
