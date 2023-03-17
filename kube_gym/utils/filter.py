@@ -5,7 +5,7 @@ base_path = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(base_path)
 
 from kube_gym.utils.monitor import Monitor
-from kube_gym.utils.unit_matcher import convert_cpu_unit, convert_memory_unit
+# from kube_gym.utils.unit_matcher import convert_cpu_unit, convert_memory_unit
 
 class Filter:
     def __init__(self):
@@ -24,15 +24,15 @@ class Filter:
         pod_rqsts = self.monitor.get_pod_rqsts(pod_name)
 
         # Check if the node has enough resources to run the pod
-        cpu_check = convert_cpu_unit(node_rsrc["cpu"][0]) >= convert_cpu_unit(pod_rqsts["cpu"])
-        memory_check = convert_memory_unit(node_rsrc["memory"][0]) >= convert_memory_unit(pod_rqsts["memory"])
+        cpu_check = node_rsrc["cpu"][1] >= pod_rqsts["cpu"]
+        memory_check = node_rsrc["memory"][1] >= pod_rqsts["memory"]
         # pod_cap_check = int(node_rsrc["pod_cap"][0]) >= 1
 
         # Print the result
         if debug:
             print(f"Node {node_name} availablity check:")
-            print(f"CPU request: {convert_cpu_unit(pod_rqsts['cpu'])}m, available: {convert_cpu_unit(node_rsrc['cpu'][0])}m")
-            print(f"Memory request: {convert_memory_unit(pod_rqsts['memory'])}Ki, available: {convert_memory_unit(node_rsrc['memory'][0])}Ki")
+            print(f"CPU request: {pod_rqsts['cpu']}m, available: {node_rsrc['cpu'][1]}m")
+            print(f"Memory request: {pod_rqsts['memory']}Ki, available: {node_rsrc['memory'][1]}Ki")
             # print(f"Pod capacity request: 1, available: {node_rsrc['pod_cap'][0]}")
 
         return cpu_check and memory_check # and pod_cap_check

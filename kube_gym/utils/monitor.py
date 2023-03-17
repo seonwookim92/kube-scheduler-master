@@ -55,7 +55,17 @@ class Monitor:
                 return_pods.append(pod)
         return_pods_names = [pod.metadata.name for pod in return_pods]
         return (return_pods_names, return_pods)
-
+    
+    def get_pods_in_node(self, node_name, debug=False):
+        if debug:
+            print("Get pods in node: " + node_name)
+        return_pods = []
+        _, pods = self.get_pods('Running')
+        for pod in pods:
+            if pod.spec.node_name == node_name:
+                return_pods.append(pod)
+        return_pods_names = [pod.metadata.name for pod in return_pods]
+        return (return_pods_names, return_pods)
 
     def get_pod(self, pod_name, debug=False):
         if debug:
@@ -69,16 +79,18 @@ class Monitor:
         pod_rqsts = {}
         pod_rqsts["name"] = pod.metadata.name
         rqsts = pod.spec.containers[0].resources.requests
-        pod_rqsts["cpu"] = convert_cpu_unit(rqsts["cpu"] if rqsts else "500m")
-        pod_rqsts["memory"] = convert_memory_unit(rqsts["memory"] if rqsts else "500Mi")
+        pod_rqsts["cpu"] = convert_cpu_unit(rqsts["cpu"]) if rqsts else convert_cpu_unit("500m")
+        pod_rqsts["memory"] = convert_memory_unit(rqsts["memory"]) if rqsts else convert_memory_unit("500Mi")
+        if debug:
+            print(f"Pod {pod_rqsts['name']} requests: {pod_rqsts['cpu']} cpu and {pod_rqsts['memory']} memory")
         return pod_rqsts
     
-    def get_nodes(self, exclude_master=True, debug=False):
+    def get_nodes(self, exclude_master = True, debug=False):
         if debug:
             print("Get nodes")
         nodes = self.core_api.list_node()
         if exclude_master:
-            nodes.items = [node for node in nodes.items if "node-0" not in node.metadata.name]
+            nodes.items = [node for node in nodes.items if "master" not in node.metadata.name or "control" not in node.metadata.name]
         node_names = [node.metadata.name for node in nodes.items]
         return (node_names, nodes.items)
     
@@ -123,16 +135,15 @@ class Monitor:
             usage_memory = convert_memory_unit(usage_metrics[node]["memory"])
             cap_memory = convert_memory_unit(self.get_node(node).status.allocatable["memory"])
 
-            # Pods running on the node
             pods = self.core_api.list_namespaced_pod(namespace="default", field_selector="spec.nodeName=" + node).items
             running_pods = [pod for pod in pods if pod.status.phase == "Running"]
             usage_pod = len(running_pods)
             cap_pod = int(self.get_node(node).status.allocatable["pods"])
 
             node_rsrc = {
-                "cpu": (usage_cpu, cap_cpu, int(usage_cpu/cap_cpu * 100)),
-                "memory": (usage_memory, cap_memory, int(usage_memory/cap_memory * 100)),
-                "n_pod": (usage_pod, cap_pod, int(usage_pod/cap_pod * 100))
+                "cpu": (usage_cpu, cap_cpu - usage_cpu, cap_cpu, int(usage_cpu/cap_cpu * 100)),
+                "memory": (usage_memory, cap_memory - usage_memory, cap_memory, int(usage_memory/cap_memory * 100)),
+                "n_pod": (usage_pod, cap_pod - usage_pod, cap_pod, int(usage_pod/cap_pod * 100))
             }
             nodes_rsrc[node] = node_rsrc
 
