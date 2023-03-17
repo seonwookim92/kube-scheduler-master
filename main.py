@@ -52,6 +52,7 @@ while True:
     if cmd == "1":
         # Start stress generator
         p_stress_gen = mp.Process(target=run_stress_gen, args=())
+        p_stress_gen.daemon = True
         p_stress_gen.start()
     elif cmd == "2":
         # Start python scheduler
