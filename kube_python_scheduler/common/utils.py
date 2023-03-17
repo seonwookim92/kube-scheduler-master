@@ -3,7 +3,7 @@ def convert_cpu_unit(size):
     # If no units follow the number, assume it is a single core
     size = str(size)
     if size[-1].isdigit():
-        return round(float(size) * 1000, 3)
+        return round(float(size), 3) # *1000?
     # If the unit is "m", assume it is milicores
     elif size[-1] == "m":
         return round(float(size[:-1]), 3)
