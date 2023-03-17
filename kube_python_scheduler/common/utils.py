@@ -13,7 +13,9 @@ def convert_cpu_unit(size):
 def convert_memory_unit(size):
     size = str(size)
 
-    if size[-2:] == "Ki":
+    if size[-1].isdigit():
+        return round(float(size), 3)
+    elif size[-2:] == "Ki":
         return round(float(size[:-2]), 3)
     elif size[-2:] == "Mi":
         return round(float(size[:-2]) * 1024, 3)
