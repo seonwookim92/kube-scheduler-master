@@ -2,7 +2,7 @@ import time
 from kubernetes import client, config
 
 import os, sys
-base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+base_path = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(base_path)
 
 from kube_stress_generator.job_gen import JobGenerator
@@ -53,4 +53,4 @@ class StressGen:
         # After job deploying is done, monitor when all jobs are done.
         # If all jobs are done, log the end time and duration of the scenario.
         # Also log should contain all jobs with their start and end times.
-        
+
