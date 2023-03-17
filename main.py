@@ -28,7 +28,7 @@ def prompt():
     print("Process ID: ", proc.pid)
     print("================================")
     print("1. Start stress generator")
-    print("2. Start FCFS scheduler")
+    print("2. Start python scheduler")
     print("3. Start RL scheduler")
     print("4. Exit")
     print("================================")
@@ -38,7 +38,7 @@ def prompt():
 def run_stress_gen():
     exec(open("kube_stress_generator/main.py").read())
 
-def run_fcfs():
+def run_python_scheduler():
     exec(open("kube_python_scheduler/main.py").read())
 
 def run_rl():
@@ -51,11 +51,11 @@ while True:
     cmd = prompt()
     if cmd == "1":
         # Start stress generator
-        p_stress_gen = mp.Process(target=kube_stress_generator.main, args=())
+        p_stress_gen = mp.Process(target=run_stress_gen, args=())
         p_stress_gen.start()
     elif cmd == "2":
         # Start python scheduler
-        p_python_scheduler = mp.Process(target=kube_python_scheduler.main, args=())
+        p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
         p_python_scheduler.start()
     elif cmd == "3":
         # TBA
