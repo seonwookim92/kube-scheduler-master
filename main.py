@@ -33,6 +33,7 @@ def prompt():
     print("4. Exit")
     print("================================")
     cmd = input("Type in the number what you want to do : ")
+    print("================================")
     return cmd
 
 def run_stress_gen():
@@ -51,9 +52,11 @@ while True:
     cmd = prompt()
     if cmd == "1":
         # Start stress generator
-        p_stress_gen = mp.Process(target=run_stress_gen, args=())
-        p_stress_gen.daemon = True
-        p_stress_gen.start()
+        # Fork the process to run it in the background
+        p = mp.Process(target=run_stress_gen, args=())
+        p.start()
+        p.join()
+        p_stress_gen = p._spawn(p._args, p._initializer, None, p._target)
     elif cmd == "2":
         # Start python scheduler
         p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
