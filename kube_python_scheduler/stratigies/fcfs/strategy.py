@@ -48,7 +48,8 @@ class FCFS:
                 if node_name == "controlplane" or node_name == "node-0":
                     continue
 
-                pods = self.core_api.list_pod_for_all_namespaces(field_selector=f"spec.nodeName={node_name}").items
+                # Get pods in default namespace
+                pods = self.monitor.get_pods_in_node(node_name)
                 print(f"# of Pods on node {node_name}: {len(pods)}")
                 running_pods = [pod for pod in pods if pod.status.phase == "Running"]
                 num_running_pods = len(running_pods)

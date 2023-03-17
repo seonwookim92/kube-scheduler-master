@@ -55,7 +55,17 @@ class Monitor:
                 return_pods.append(pod)
         return_pods_names = [pod.metadata.name for pod in return_pods]
         return (return_pods_names, return_pods)
-
+    
+    def get_pods_in_node(self, node_name, debug=False):
+        if debug:
+            print("Get pods in node: " + node_name)
+        return_pods = []
+        pods = self.get_pods('Running')
+        for pod in pods.items:
+            if pod.spec.node_name == node_name:
+                return_pods.append(pod)
+        return_pods_names = [pod.metadata.name for pod in return_pods]
+        return (return_pods_names, return_pods)
 
     def get_pod(self, pod_name, debug=False):
         if debug:
