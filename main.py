@@ -2,7 +2,7 @@ import gym
 import multiprocessing as mp
 
 import os, sys
-base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+base_path = os.path.join(os.path.dirname(__file__))
 sys.path.append(base_path)
 
 import kube_gym, kube_python_scheduler, kube_stress_generator

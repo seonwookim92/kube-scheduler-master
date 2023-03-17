@@ -76,6 +76,10 @@ class StressGen:
                 log_file.write(msg + "\n")
                 break
         
+        while True:
+            # Monitoring if all jobs are done
+            break
+
         log_file.close()
 
         

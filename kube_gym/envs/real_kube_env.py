@@ -10,7 +10,7 @@ sys.path.append(base_path)
 from kube_gym.utils.monitor import Monitor
 from kube_gym.utils.unit_matcher import *
 
-from kube_gym.scheduler import Scheduler
+from kube_gym.scheduler.scheduler import Scheduler
 
 class RealKubeEnv(gym.Env):
     def __init__(self):
