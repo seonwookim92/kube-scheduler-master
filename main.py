@@ -8,19 +8,6 @@ sys.path.append(base_path)
 import kube_gym, kube_python_scheduler, kube_stress_generator
 from kube_gym.envs.real_kube_env import RealKubeEnv
 
-def prompt():
-    print("Kubernetes Scheduler Simulator")
-    print("================================")
-    print("Process ID: ", proc.pid)
-    print("================================")
-    print("1. Start stress generator")
-    print("2. Start FCFS scheduler")
-    print("3. Start RL scheduler")
-    print("4. Exit")
-    print("================================")
-    cmd = input("Type in the number what you want to do : ")
-    return cmd
-
 env = gym.make('RealKubeEnv-v0')
 envv = RealKubeEnv()
 
@@ -35,17 +22,41 @@ action_map = {
 
 proc = mp.current_process()
 
+def prompt():
+    print("Kubernetes Scheduler Simulator")
+    print("================================")
+    print("Process ID: ", proc.pid)
+    print("================================")
+    print("1. Start stress generator")
+    print("2. Start FCFS scheduler")
+    print("3. Start RL scheduler")
+    print("4. Exit")
+    print("================================")
+    cmd = input("Type in the number what you want to do : ")
+    return cmd
+
+def run_stress_gen():
+    exec(open("kube_stress_generator/main.py").read())
+
+def run_fcfs():
+    exec(open("kube_python_scheduler/main.py").read())
+
+def run_rl():
+    # TBA
+    # exec(open("kube_gym/main.py").read())
+    pass
+
 while True:
     # Prompt
     cmd = prompt()
     if cmd == "1":
         # Start stress generator
-        stress_gen = mp.Process(target=kube_stress_generator.main, args=())
-        stress_gen.start()
+        p_stress_gen = mp.Process(target=kube_stress_generator.main, args=())
+        p_stress_gen.start()
     elif cmd == "2":
-        # Start FCFS scheduler
-        fcfs = mp.Process(target=kube_python_scheduler.main, args=())
-        fcfs.start()
+        # Start python scheduler
+        p_python_scheduler = mp.Process(target=kube_python_scheduler.main, args=())
+        p_python_scheduler.start()
     elif cmd == "3":
         # TBA
         pass
@@ -54,7 +65,6 @@ while True:
         os.system("bash kube_stress_generator/purge_jobs.sh")
         # Stop all processes
         os.kill(proc.pid, 9)
-        # break
 
     
 
