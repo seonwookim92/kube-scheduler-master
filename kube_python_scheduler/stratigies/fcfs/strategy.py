@@ -49,7 +49,7 @@ class FCFS:
                     continue
 
                 pods = self.core_api.list_pod_for_all_namespaces(field_selector=f"spec.nodeName={node_name}").items
-                print(f"Pods on node {node_name}: {pods}")
+                print(f"# of Pods on node {node_name}: {len(pods)}")
                 running_pods = [pod for pod in pods if pod.status.phase == "Running"]
                 num_running_pods = len(running_pods)
 
