@@ -1,10 +1,10 @@
 from kubernetes import client, config
 
 import os, sys
-kube_python_scheduler_path = os.path.join(os.path.dirname(__file__), "..")
-sys.path.append(kube_python_scheduler_path)
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(base_path)
 
-from common.utils import convert_cpu_unit, convert_memory_unit
+from kube_python_scheduler.common.utils import convert_cpu_unit, convert_memory_unit
 
 class Monitor:
     def __init__(self, cfg=None, sched=None):
@@ -73,11 +73,11 @@ class Monitor:
         pod_rqsts["memory"] = rqsts["memory"] if rqsts else "500Mi"
         return pod_rqsts
     
-    def get_nodes(self, exlude_master = True, debug=False):
+    def get_nodes(self, exclude_master = True, debug=False):
         if debug:
             print("Get nodes")
         nodes = self.core_api.list_node()
-        if exlude_master:
+        if exclude_master:
             nodes.items = [node for node in nodes.items if "master" not in node.metadata.name or "control" not in node.metadata.name]
         node_names = [node.metadata.name for node in nodes.items]
         return (node_names, nodes.items)
