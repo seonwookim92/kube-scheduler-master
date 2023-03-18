@@ -52,8 +52,8 @@ while True:
     cmd = prompt()
     if cmd == "1":
         # Start stress generator
-        # Fork the process to run it in the background
-        os.system("bash nohup python kube_stress_generator/main.py & > log.txt")
+        p_stress_gen = mp.Process(target=run_stress_gen, args=())
+        p_stress_gen.start()
     elif cmd == "2":
         # Start python scheduler
         p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
