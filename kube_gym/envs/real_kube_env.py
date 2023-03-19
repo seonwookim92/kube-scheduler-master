@@ -53,8 +53,40 @@ class RealKubeEnv(gym.Env):
     def start_stress_gen(self, scenario="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
         # TODO Need to elaborate arguments part
-        subprocess.Popen(["python", "kube_stress_generator/main.py"])
+        subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py")])
 
+    def get_pending_pod(self, debug=False):
+        # Get the most recent pending pod
+        pending_pods_names = self.monitor.get_pending_pods()[0]
+        if debug:
+            print("Pending Pod: " + str(pending_pods_names))
+        if len(pending_pods_names) == 0:
+            pending_pod_name = ""
+            pending_pod_obs = np.array([0, 0])
+            return pending_pod_name, pending_pod_obs
+        else:
+            pending_pod_name = pending_pods_names[0]
+            if debug:
+                print("Pending Pod Name: " + str(pending_pod_name))
+            pending_pod_rqsts = self.monitor.get_pod_rqsts(pending_pod_name)
+
+            if debug:
+                print("Pending Pod Requests: " + str(pending_pod_rqsts))
+
+            node_cpu_cap = self.monitor.get_node_rsrc(self.node_list[0])["cpu"][1]
+            node_memory_cap = self.monitor.get_node_rsrc(self.node_list[0])["memory"][1]
+            if debug:
+                print("Node CPU Capacity: " + str(node_cpu_cap))
+                print("Node Memory Capacity: " + str(node_memory_cap))
+
+            pending_pod_cpu_rqst = max(int(pending_pod_rqsts["cpu"] / node_cpu_cap * 100), 1)
+            pending_pod_memory_rqst = max(int(pending_pod_rqsts["memory"] / node_memory_cap * 100), 1)
+
+            pending_pod_obs = np.array([pending_pod_cpu_rqst, pending_pod_memory_rqst])
+            if debug:
+                print("Pending Pod Observation: " + str(pending_pod_obs))
+
+            return pending_pod_name, pending_pod_obs
 
     def get_reward(self, debug=False):
         # Utilization of resources on each node
@@ -96,34 +128,36 @@ class RealKubeEnv(gym.Env):
         return reward
     
     def get_state(self, debug=False):
-        # Node cpu, memory capacity
-        node_cpu_cap = self.monitor.get_node_rsrc(self.node_list[0])["cpu"][1]
-        node_memory_cap = self.monitor.get_node_rsrc(self.node_list[0])["memory"][1]
-        if debug:
-            print("Node CPU Capacity: " + str(node_cpu_cap))
-            print("Node Memory Capacity: " + str(node_memory_cap))
+        # # Node cpu, memory capacity
+        # node_cpu_cap = self.monitor.get_node_rsrc(self.node_list[0])["cpu"][1]
+        # node_memory_cap = self.monitor.get_node_rsrc(self.node_list[0])["memory"][1]
+        # if debug:
+        #     print("Node CPU Capacity: " + str(node_cpu_cap))
+        #     print("Node Memory Capacity: " + str(node_memory_cap))
 
-        # Get the most recent pending pod
-        pending_pods_names = self.monitor.get_pending_pods()[0]
-        if debug:
-            print("Pending Pod: " + str(pending_pods_names))
-        if len(pending_pods_names) == 0:
-            pending_pod_obs = np.array([0, 0])
-        else:
-            pending_pod_name = pending_pods_names[0]
-            if debug:
-                print("Pending Pod Name: " + str(pending_pod_name))
-            pending_pod_rqsts = self.monitor.get_pod_rqsts(pending_pod_name)
+        # # Get the most recent pending pod
+        # pending_pods_names = self.monitor.get_pending_pods()[0]
+        # if debug:
+        #     print("Pending Pod: " + str(pending_pods_names))
+        # if len(pending_pods_names) == 0:
+        #     pending_pod_obs = np.array([0, 0])
+        # else:
+        #     pending_pod_name = pending_pods_names[0]
+        #     if debug:
+        #         print("Pending Pod Name: " + str(pending_pod_name))
+        #     pending_pod_rqsts = self.monitor.get_pod_rqsts(pending_pod_name)
 
-            if debug:
-                print("Pending Pod Requests: " + str(pending_pod_rqsts))
+        #     if debug:
+        #         print("Pending Pod Requests: " + str(pending_pod_rqsts))
 
-            pending_pod_cpu_rqst = max(int(pending_pod_rqsts["cpu"] / node_cpu_cap * 100), 1)
-            pending_pod_memory_rqst = max(int(pending_pod_rqsts["memory"] / node_memory_cap * 100), 1)
+        #     pending_pod_cpu_rqst = max(int(pending_pod_rqsts["cpu"] / node_cpu_cap * 100), 1)
+        #     pending_pod_memory_rqst = max(int(pending_pod_rqsts["memory"] / node_memory_cap * 100), 1)
 
-            pending_pod_obs = np.array([pending_pod_cpu_rqst, pending_pod_memory_rqst])
-            if debug:
-                print("Pending Pod Observation: " + str(pending_pod_obs))
+        #     pending_pod_obs = np.array([pending_pod_cpu_rqst, pending_pod_memory_rqst])
+        #     if debug:
+        #         print("Pending Pod Observation: " + str(pending_pod_obs))
+
+        pending_pod_name, pending_pod_obs = self.get_pending_pod(debug=debug)
 
         # Get the resource utilization of each node
         node_obs = []
@@ -163,7 +197,8 @@ class RealKubeEnv(gym.Env):
 
     def step(self, action, debug=False):
         # Get first pending pod
-        pod_name = self.monitor.get_pending_pods()[0][0]
+        # pod_name = self.monitor.get_pending_pods()[0][0]
+        pod_name, _ = self.get_pending_pod(debug=debug)
 
         # Action map
         action_map = {
