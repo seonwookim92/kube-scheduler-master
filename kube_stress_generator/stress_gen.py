@@ -29,7 +29,7 @@ class StressGen:
                 scenario.append(line.strip().split(","))
         return scenario
 
-    def run_stress_gen(self):
+    def start(self):
         scenario_start_time = time.time()
 
         # While running this program, checking how many minutes have passed since the start of the scenario
