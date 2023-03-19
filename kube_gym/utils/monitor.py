@@ -161,5 +161,5 @@ class Monitor:
             print("Get jobs")
         jobs = self.batch_api.list_namespaced_job(namespace="default")
         jobs_names = [job.metadata.name for job in jobs.items]
-        return (jobs_names, jobs.items)
+        return jobs_names, jobs.items
     
