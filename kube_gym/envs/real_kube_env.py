@@ -47,7 +47,7 @@ class RealKubeEnv(gym.Env):
         # Initialize the action space
         self.action_space = spaces.Discrete(self.num_nodes + 1)
 
-    def start_scenario(self, scenario="scenario-2023-02-27.csv"):
+    def start_stress_gen(self, scenario="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
         self.stress_gen = StressGen(silent=True, scenario_file=scenario)
         self.stress_gen.start()
