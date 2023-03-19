@@ -145,7 +145,7 @@ class RealKubeEnv(gym.Env):
     def get_done(self, debug=False):
         done = True
         # If all jobs are completed, then done
-        jobs_name, jobs = self.monitor.get_jobs()[0]
+        _, jobs = self.monitor.get_jobs()
         for j in jobs:
             if j.items[0].status.succeeded != 1:
                 done = False
