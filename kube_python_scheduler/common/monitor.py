@@ -20,7 +20,7 @@ class Monitor:
         self.core_api = client.CoreV1Api()
 
         # Load the Batch API client
-        self.batch_api = client.BatchV1Api(client.ApiClient)
+        self.batch_api = client.BatchV1Api()
 
     def get_pending_pods(self, debug=False):
         if debug:

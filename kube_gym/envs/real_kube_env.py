@@ -141,6 +141,21 @@ class RealKubeEnv(gym.Env):
             print("State: " + str(state))
 
         return state
+    
+    def get_done(self, debug=False):
+        done = True
+        # If all jobs are completed, then done
+        jobs_name, jobs = self.monitor.get_jobs()[0]
+        for j in jobs:
+            if j.items[0].status.succeeded != 1:
+                done = False
+                break
+
+        if debug:
+            print("Done: " + str(done))
+
+        return done
+
 
     def step(self, action, debug=False):
         # Get first pending pod
@@ -155,13 +170,15 @@ class RealKubeEnv(gym.Env):
             4: "node-4",
             5: "node-5",
         }
-        node_name = action_map[action]
 
-        # Take an action in the environment based on the provided action
-        if debug:
-            print("Action: " + str(action))
-            print("Pod Name: " + str(pod_name))
-            print("Node Name: " + str(node_name))
+        if action != 0:
+            node_name = action_map[action]
+
+            # Take an action in the environment based on the provided action
+            if debug:
+                print("Action: " + str(action))
+                print("Pod Name: " + str(pod_name))
+                print("Node Name: " + str(node_name))
 
         self.scheduler.scheduling(pod_name, node_name)
 
