@@ -6,5 +6,5 @@ sys.path.append(base_path)
 
 from kube_stress_generator.stress_gen import StressGen
 
-stress_gen = StressGen()
+stress_gen = StressGen(silent=False)
 stress_gen.run_stress_gen()

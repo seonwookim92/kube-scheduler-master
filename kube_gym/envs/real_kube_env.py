@@ -2,6 +2,7 @@ import gym
 from gym import spaces
 from time import sleep
 import numpy as np
+import multiprocessing as mp
 
 import os, sys
 base_path = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -47,10 +48,9 @@ class RealKubeEnv(gym.Env):
         self.action_space = spaces.Discrete(self.num_nodes + 1)
 
     def start_scenario(self, scenario="scenario-2023-02-27.csv"):
-        self.stress_gen = StressGen(scenario)
-        self.stress_gen.run_stress_gen()
-
-
+        # Start stress generator in a separate process
+        self.stress_gen = StressGen(silent=True, scenario_file=scenario)
+        self.stress_gen.start()
 
     def get_reward(self, debug=False):
         # Utilization of resources on each node
@@ -165,7 +165,7 @@ class RealKubeEnv(gym.Env):
 
         self.scheduler.scheduling(pod_name, node_name)
 
-        while pod_name not in self.monitor.get_pods_in_node()[0]:
+        while pod_name not in self.monitor.get_pods_in_node(node_name)[0]:
             if debug:
                 print("Waiting for pod to be scheduled...")
             sleep(1)
