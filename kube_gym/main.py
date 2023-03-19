@@ -1,7 +1,7 @@
 import gym
 import time
 from time import sleep
-import multiprocessing as mp
+import subprocess
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -27,14 +27,12 @@ action_map = {
 }
 
 
-def start_stress_gen():
-    env.reset()
-    env.start_stress_gen()
+state = env.reset()
+sleep(1)
 
-p_stress_gen = mp.Process(target=start_stress_gen, args=())
-p_stress_gen.start()
-
-sleep(5)
+print("Start stress generator")
+env.start_stress_gen()
+sleep(1)
 
 turn = 0
 while done == False:
@@ -48,6 +46,4 @@ while done == False:
     print("Done: ", done)
     print("================================")
     sleep(1)
-
-p_stress_gen.join()
 

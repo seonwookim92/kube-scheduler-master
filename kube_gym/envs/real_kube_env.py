@@ -2,7 +2,7 @@ import gym
 from gym import spaces
 from time import sleep
 import numpy as np
-import multiprocessing as mp
+import subprocess
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -52,8 +52,9 @@ class RealKubeEnv(gym.Env):
 
     def start_stress_gen(self, scenario="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
-        self.stress_gen = StressGen(silent=True, scenario_file=scenario)
-        self.stress_gen.start()
+        # TODO Need to elaborate arguments part
+        subprocess.Popen(["python", "kube_stress_generator/main.py"])
+
 
     def get_reward(self, debug=False):
         # Utilization of resources on each node
