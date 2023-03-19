@@ -210,7 +210,7 @@ class RealKubeEnv(gym.Env):
             5: "node-5",
         }
 
-        if action != 0:
+        if action != 0 and pod_name != "":
             node_name = action_map[action]
 
             # Take an action in the environment based on the provided action
@@ -219,13 +219,13 @@ class RealKubeEnv(gym.Env):
                 print("Pod Name: " + str(pod_name))
                 print("Node Name: " + str(node_name))
 
-        self.scheduler.scheduling(pod_name, node_name)
+            self.scheduler.scheduling(pod_name, node_name)
 
-        while pod_name not in self.monitor.get_pods_in_node(node_name)[0]:
-            if debug:
-                print("Waiting for pod to be scheduled...")
-            sleep(1)
-        sleep(3)
+            while pod_name not in self.monitor.get_pods_in_node(node_name)[0]:
+                if debug:
+                    print("Waiting for pod to be scheduled...")
+                sleep(1)
+            sleep(3)
 
         # Observe the state of the environment
         state = self.get_state()
