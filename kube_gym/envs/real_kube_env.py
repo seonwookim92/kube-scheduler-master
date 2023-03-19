@@ -4,6 +4,9 @@ from time import sleep
 import numpy as np
 import multiprocessing as mp
 
+import warnings
+warnings.filterwarnings("ignore")
+
 import os, sys
 base_path = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(base_path)
