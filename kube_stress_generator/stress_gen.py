@@ -84,7 +84,7 @@ class StressGen:
 
         
             
-        scenario_start_time = t
+        # scenario_start_time = t
         # After job deploying is done, monitor when all jobs are done.
         # If all jobs are done, log the end time and duration of the scenario.
         # Also log should contain all jobs with their start and end times.

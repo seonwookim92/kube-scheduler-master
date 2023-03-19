@@ -12,6 +12,8 @@ from kube_gym.utils.unit_matcher import *
 
 from kube_gym.scheduler.scheduler import Scheduler
 
+from kube_stress_generator.stress_gen import StressGen
+
 class RealKubeEnv(gym.Env):
     def __init__(self):
         super(RealKubeEnv, self).__init__()
@@ -44,7 +46,13 @@ class RealKubeEnv(gym.Env):
         # Initialize the action space
         self.action_space = spaces.Discrete(self.num_nodes + 1)
 
-    def calc_reward(self, debug=False):
+    def start_scenario(self, scenario="scenario-2023-02-27.csv"):
+        self.stress_gen = StressGen(scenario)
+        self.stress_gen.run_stress_gen()
+
+
+
+    def get_reward(self, debug=False):
         # Utilization of resources on each node
         util = {}
         for node in self.node_list:
@@ -83,7 +91,7 @@ class RealKubeEnv(gym.Env):
 
         return reward
     
-    def observe_state(self, debug=False):
+    def get_state(self, debug=False):
         # Node cpu, memory capacity
         node_cpu_cap = self.monitor.get_node_rsrc(self.node_list[0])["cpu"][1]
         node_memory_cap = self.monitor.get_node_rsrc(self.node_list[0])["memory"][1]
@@ -134,18 +142,44 @@ class RealKubeEnv(gym.Env):
 
         return state
 
-    def step(self, action):
+    def step(self, action, debug=False):
+        # Get first pending pod
+        pod_name = self.monitor.get_pending_pods()[0][0]
+
+        # Action map
+        action_map = {
+            0: "standby",
+            1: "node-1",
+            2: "node-2",
+            3: "node-3",
+            4: "node-4",
+            5: "node-5",
+        }
+        node_name = action_map[action]
+
         # Take an action in the environment based on the provided action
-        pod_name, node_name = action
+        if debug:
+            print("Action: " + str(action))
+            print("Pod Name: " + str(pod_name))
+            print("Node Name: " + str(node_name))
+
         self.scheduler.scheduling(pod_name, node_name)
 
-        sleep(10)
+        while pod_name not in self.monitor.get_pods_in_node()[0]:
+            if debug:
+                print("Waiting for pod to be scheduled...")
+            sleep(1)
+        sleep(3)
 
         # Observe the state of the environment
-        state = self.observe_state()
+        state = self.get_state()
+        if debug:
+            print("State: " + str(state))
 
         # Calculate the reward
-        reward = self.calc_reward()
+        reward = self.get_reward()
+        if debug:
+            print("Reward: " + str(reward))
 
         # Check if the episode is done ===> Set to False for now
         done = False
@@ -165,6 +199,10 @@ class RealKubeEnv(gym.Env):
             else:
                 print("Waiting for jobs to be deleted...")
 
+        sleep(3)
+        state = self.get_state()
+
+
 if __name__ == "__main__":
     env = RealKubeEnv()
 
@@ -175,6 +213,6 @@ if __name__ == "__main__":
     print(f"Action Space: {env.action_space}")
 
     print("Observing state...")
-    state = env.observe_state(debug=True)
+    state = env.get_state(debug=True)
     print("Calculating reward...")
-    reward = env.calc_reward(debug=True)
+    reward = env.get_reward(debug=True)
