@@ -147,7 +147,7 @@ class RealKubeEnv(gym.Env):
         # If all jobs are completed, then done
         _, jobs = self.monitor.get_jobs()
         for j in jobs:
-            if j.items[0].status.succeeded != 1:
+            if j.status.succeeded != 1:
                 done = False
                 break
 
