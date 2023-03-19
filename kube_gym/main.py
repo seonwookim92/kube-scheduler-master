@@ -33,6 +33,7 @@ def start_stress_gen():
 
 p_stress_gen = mp.Process(target=start_stress_gen, args=())
 p_stress_gen.start()
+sleep(5)
 
 turn = 0
 while done == False:
