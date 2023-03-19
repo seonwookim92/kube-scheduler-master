@@ -21,7 +21,7 @@ class StressGen:
 
     def load_scenario(self, scenario_file):
         # Load scenario
-        scenario_path = "kube_stress_generator/scenarios/" + scenario_file
+        scenario_path = os.path.join(base_path, "kube_stress_generator/scenarios/", scenario_file)
         scenario = []
         with open(scenario_path, "r") as f:
             lines = f.readlines()
