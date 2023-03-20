@@ -209,14 +209,11 @@ class RealKubeEnv(gym.Env):
         # Check number of jobs
         if len(self.monitor.get_jobs()[0]) != self.num_pods_in_scenario:
             done = False
-            return done
 
-        # If all jobs are completed, then done
-        _, jobs = self.monitor.get_jobs()
-        for j in jobs:
-            if j.status.succeeded != 1:
-                done = False
-                break
+        # If all pods are scheduled, then done
+        _, pods = self.monitor.get_pending_pods()
+        if len(pods) != 0:
+            done = False
 
         if debug:
             print("Done: " + str(done))
