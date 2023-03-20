@@ -40,7 +40,7 @@ while done == False:
     print("Turn: ", turn)
     action = env.action_space.sample()
     print("Action: ", action)
-    state, reward, done, _ = env.step(action, True)
+    state, reward, done, _ = env.step(action)
     print("State: ", state)
     print("Reward: ", reward)
     print("Done: ", done)

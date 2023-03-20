@@ -60,10 +60,10 @@ class RealKubeEnv(gym.Env):
         os.kill(self.stress_gen_pid, signum)
         exit(0)
 
-    def start_stress_gen(self, scenario="scenario-2023-02-27.csv"):
+    def start_stress_gen(self, silent=False, scenario_file="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
         # TODO Need to elaborate arguments part
-        p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py")])
+        p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py"), silent, scenario_file])
         self.stress_gen_pid = p_stress_gen.pid
         
 
@@ -208,7 +208,7 @@ class RealKubeEnv(gym.Env):
         return done
 
 
-    def step(self, action, debug=False):
+    def step(self, action):
         # Get first pending pod
         # pod_name = self.monitor.get_pending_pods()[0][0]
         pod_name, _ = self.get_pending_pod(debug=debug)
@@ -227,35 +227,30 @@ class RealKubeEnv(gym.Env):
             node_name = action_map[action]
 
             # Take an action in the environment based on the provided action
-            if debug:
-                print("Action: " + str(action))
-                print("Pod Name: " + str(pod_name))
-                print("Node Name: " + str(node_name))
+            print("Action: " + str(action))
+            print("Pod Name: " + str(pod_name))
+            print("Node Name: " + str(node_name))
 
             self.scheduler.scheduling(pod_name, node_name)
 
             while pod_name not in self.monitor.get_pods_in_node(node_name)[0]:
-                if debug:
-                    print("Waiting for pod to be scheduled...")
+                print("Waiting for pod to be scheduled...")
                 sleep(1)
             sleep(3)
         
         else:
-            if debug:
-                print("Action: " + str(action))
-                print("Pod Name: " + str(pod_name))
-                print("Node Name: " + str(""))
-                print("Nothing to do...")
+            print("Action: " + str(action))
+            print("Pod Name: " + str(pod_name))
+            print("Node Name: " + str(""))
+            print("Nothing to do...")
 
         # Observe the state of the environment
         state = self.get_state()
-        if debug:
-            print("State: " + str(state))
+        print("State: " + str(state))
 
         # Calculate the reward
         reward = self.get_reward()
-        if debug:
-            print("Reward: " + str(reward))
+        print("Reward: " + str(reward))
 
         # Check if the episode is done ===> Set to False for now
         done = self.get_done()
