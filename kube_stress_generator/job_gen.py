@@ -12,9 +12,10 @@ class JobGenerator:
             self.cpu_limit = f"{self.stress_level}000m"
             self.mem_limit = f"1Gi"
         elif self.stress_type == "vm":
-            self.cpu_limit = f"{max(1500, self.stress_level / 3)}m"
-            self.mem_limit = f"{self.stress_level}Gi"
-            self.mem_limit_stressng = f"{self.stress_level}G"
+            # self.cpu_limit = f"{max(1500, self.stress_level / 3)}m"
+            self.cpu_limit = f"{self.stress_level}m"
+            self.mem_limit = f"{self.stress_level + 0.5}Gi"
+            self.mem_limit_stressng = f"{self.stress_level + 0.5}G"
 
         self.job_name = f"stressng-{self.stress_type}-{self.stress_level}l-{self.duration}m-{self.idx}th"
         self.image = "seki5405/stress-ng-image"
