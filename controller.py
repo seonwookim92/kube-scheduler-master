@@ -53,7 +53,7 @@ def get_pid(name):
     output = subprocess.check_output("ps -ef | grep python", shell=True).decode()
     for line in output.split("\n"):
         # TODO This function is not perfect. Just temporary. Need to revisit!!!
-        if "kube" in line:
+        if name in line:
             return int(line.split()[1])
 
 while True:
@@ -65,7 +65,13 @@ while True:
         p_stress_gen.start()
     elif cmd == "2":
         # Stop stress generator
-        os.kill(get_pid("kube_stress_generator/main.py"), 9)
+        pid = get_pid("kube")
+        if pid:
+            os.kill(pid, 9)
+            print(f"Stress generator (pid: {pid}) is stopped")
+        else:
+            print("Stress generator is not running")
+
     elif cmd == "3":
         # Start python scheduler
         p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
