@@ -64,6 +64,7 @@ class RealKubeEnv(gym.Env):
         # Start stress generator in a separate process
         # TODO Need to elaborate arguments part
         p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py"), silent, scenario_file])
+        print("Stress generator PID: " + str(p_stress_gen.pid))
         self.stress_gen_pid = p_stress_gen.pid
         
 
