@@ -1,3 +1,4 @@
+import psutil
 import gym
 import multiprocessing as mp
 
@@ -28,9 +29,10 @@ def prompt():
     print("Process ID: ", proc.pid)
     print("================================")
     print("1. Start stress generator")
-    print("2. Start python scheduler")
-    print("3. Start RL scheduler")
-    print("4. Exit")
+    print("2. Stop stress generator")
+    print("3. Start python scheduler")
+    print("4. Start RL scheduler")
+    print("5. Exit")
     print("================================")
     cmd = input("Type in the number what you want to do : ")
     print("================================")
@@ -47,6 +49,11 @@ def run_rl():
     # exec(open("kube_gym/main.py").read())
     pass
 
+def get_pid(name):
+    for proc in psutil.process_iter(['pid', 'name'])
+        if name in proc.info['name']:
+            return proc.info['pid']
+
 while True:
     # Prompt
     cmd = prompt()
@@ -55,13 +62,16 @@ while True:
         p_stress_gen = mp.Process(target=run_stress_gen, args=())
         p_stress_gen.start()
     elif cmd == "2":
+        # Stop stress generator
+        os.kill(get_pid("kube_stress_generator/main.py"), 9)
+    elif cmd == "3":
         # Start python scheduler
         p_python_scheduler = mp.Process(target=run_python_scheduler, args=())
         p_python_scheduler.start()
-    elif cmd == "3":
+    elif cmd == "4":
         # TBA
         pass
-    elif cmd == "4":
+    elif cmd == "5":
         # Purge all kubernetes resources by running kube_stress_generator/purge_jobs.sh
         os.system("bash kube_stress_generator/purge_jobs.sh")
         # Stop all processes
