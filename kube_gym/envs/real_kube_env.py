@@ -212,7 +212,7 @@ class RealKubeEnv(gym.Env):
     def step(self, action):
         # Get first pending pod
         # pod_name = self.monitor.get_pending_pods()[0][0]
-        pod_name, _ = self.get_pending_pod(debug=debug)
+        pod_name, _ = self.get_pending_pod()
 
         # Action map
         action_map = {
