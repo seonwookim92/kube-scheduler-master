@@ -187,8 +187,8 @@ class RealKubeEnv(gym.Env):
         for node in self.node_list:
             node_rsrc = self.monitor.get_node_rsrc(node)
 
-            node_cpu_util = node_rsrc["cpu"][2]
-            node_memory_util = node_rsrc["memory"][2]
+            node_cpu_util = node_rsrc["cpu"][3]
+            node_memory_util = node_rsrc["memory"][3]
 
             # node_obs.append([node_cpu_util, node_memory_util])
             node_obs += [node_cpu_util, node_memory_util]

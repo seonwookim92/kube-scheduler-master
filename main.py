@@ -1,6 +1,6 @@
-import psutil
 import gym
 import multiprocessing as mp
+import subprocess
 
 import os, sys
 base_path = os.path.join(os.path.dirname(__file__))
@@ -50,9 +50,11 @@ def run_rl():
     pass
 
 def get_pid(name):
-    for proc in psutil.process_iter(['pid', 'name']):
-        if name in proc.info['name']:
-            return proc.info['pid']
+    output = subprocess.check_output("ps -ef | grep python", shell=True).decode()
+    for line in output.split("\n"):
+        # TODO This function is not perfect. Just temporary. Need to revisit!!!
+        if "kube" in line:
+            return int(line.split()[1])
 
 while True:
     # Prompt

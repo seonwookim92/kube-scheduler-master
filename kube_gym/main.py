@@ -39,11 +39,11 @@ while done == False:
     turn += 1
     print("Turn: ", turn)
     action = env.action_space.sample()
-    print("Action: ", action)
+    # print("Action: ", action)
     state, reward, done, _ = env.step(action)
-    print("State: ", state)
-    print("Reward: ", reward)
-    print("Done: ", done)
+    # print("State: ", state)
+    # print("Reward: ", reward)
+    # print("Done: ", done)
     print("================================")
     sleep(1)
 
