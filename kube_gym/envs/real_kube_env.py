@@ -239,6 +239,13 @@ class RealKubeEnv(gym.Env):
                     print("Waiting for pod to be scheduled...")
                 sleep(1)
             sleep(3)
+        
+        else:
+            if debug:
+                print("Action: " + str(action))
+                print("Pod Name: " + str(pod_name))
+                print("Node Name: " + str(""))
+                print("Nothing to do...")
 
         # Observe the state of the environment
         state = self.get_state()
@@ -251,7 +258,7 @@ class RealKubeEnv(gym.Env):
             print("Reward: " + str(reward))
 
         # Check if the episode is done ===> Set to False for now
-        done = False
+        done = self.get_done()
 
         # Return the state, reward, and done
         return state, reward, done, {}
