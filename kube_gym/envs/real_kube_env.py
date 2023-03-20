@@ -3,6 +3,7 @@ from gym import spaces
 from time import sleep
 import numpy as np
 import subprocess
+import signal
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -50,10 +51,22 @@ class RealKubeEnv(gym.Env):
         # Initialize the action space
         self.action_space = spaces.Discrete(self.num_nodes + 1)
 
+        # Signal handler
+        signal.signal(signal.SIGINT, self.ctrl_c_handler)
+        self.stress_gen_pid = None
+
+    def ctrl_c_handler(self, signum, frame):
+        print("Terminate all processes...")
+        os.kill(self.stress_gen_pid, signum)
+        exit(0)
+
     def start_stress_gen(self, scenario="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
         # TODO Need to elaborate arguments part
-        subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py")])
+        p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py")])
+        self.stress_gen_pid = p_stress_gen.pid
+        
+
 
     def get_pending_pod(self, debug=False):
         # Get the most recent pending pod
