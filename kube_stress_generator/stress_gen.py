@@ -9,13 +9,13 @@ from kube_stress_generator.job_gen import JobGenerator
 from kube_gym.utils import monitor
 
 class StressGen:
-    def __init__(self, silent=True, scenario_file="scenario-2023-02-27.csv"):
+    def __init__(self, silent="True", scenario_file="scenario-2023-02-27.csv"):
         self.scenario_file = scenario_file
         self.config = config.load_kube_config()
         self.batch_api = client.BatchV1Api()
         self.scenario = self.load_scenario(scenario_file)
         self.mnt = monitor.Monitor()
-        self.silent = silent
+        self.silent = True if silent == "True" else False
         if self.silent:
             debug = False
 

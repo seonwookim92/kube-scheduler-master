@@ -60,7 +60,7 @@ class RealKubeEnv(gym.Env):
         os.kill(self.stress_gen_pid, signum)
         exit(0)
 
-    def start_stress_gen(self, silent=False, scenario_file="scenario-2023-02-27.csv"):
+    def start_stress_gen(self, silent="False", scenario_file="scenario-2023-02-27.csv"):
         # Start stress generator in a separate process
         # TODO Need to elaborate arguments part
         p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py"), silent, scenario_file])
