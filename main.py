@@ -50,7 +50,7 @@ def run_rl():
     pass
 
 def get_pid(name):
-    for proc in psutil.process_iter(['pid', 'name'])
+    for proc in psutil.process_iter(['pid', 'name']):
         if name in proc.info['name']:
             return proc.info['pid']
 

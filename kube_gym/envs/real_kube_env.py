@@ -51,6 +51,9 @@ class RealKubeEnv(gym.Env):
         # Initialize the action space
         self.action_space = spaces.Discrete(self.num_nodes + 1)
 
+        # Number of scheduling pods in scenario
+        self.num_pods_in_scenario = 0
+
         # Signal handler
         signal.signal(signal.SIGINT, self.ctrl_c_handler)
         self.stress_gen_pid = None
@@ -66,6 +69,12 @@ class RealKubeEnv(gym.Env):
         p_stress_gen = subprocess.Popen(["python", os.path.join(base_path,"kube_stress_generator/main.py"), silent, scenario_file])
         print("Stress generator PID: " + str(p_stress_gen.pid))
         self.stress_gen_pid = p_stress_gen.pid
+
+        # Get number of scheduling pods in scenario
+        with open(os.path.join(base_path, "kube_stress_generator/scenarios", scenario_file), "r") as f:
+            self.num_pods_in_scenario = len(f.readlines())
+
+        print("Number of scheduling pods in scenario: " + str(self.num_pods_in_scenario))
         
 
 
@@ -196,6 +205,12 @@ class RealKubeEnv(gym.Env):
     
     def get_done(self, debug=False):
         done = True
+
+        # Check number of jobs
+        if len(self.monitor.get_jobs()[0]) != self.num_pods_in_scenario:
+            done = False
+            return done
+
         # If all jobs are completed, then done
         _, jobs = self.monitor.get_jobs()
         for j in jobs:
