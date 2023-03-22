@@ -3,11 +3,14 @@ base_path = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(base_path)
 
 class Pod:
-    def __init__(self, pod_spec, debug=False):
+    def __init__(self, pod_spec, node_spec, debug=False):
         self.debug = debug
 
         self.pod_idx = pod_spec[0]
         self.pod_name = f"stressng-{pod_spec[1]}-{pod_spec[2]}l-{pod_spec[3]}m-{pod_spec[4]}th"
+
+        self.node_cpu_pool = node_spec["cpu_pool"]
+        self.node_mem_pool = node_spec["mem_pool"]
 
         if pod_spec[1] == "cpu":
             cpu_req = int(pod_spec[2]) * 1000
@@ -19,6 +22,8 @@ class Pod:
         self.spec = {
             "cpu_req": cpu_req,
             "mem_req": mem_req,
+            "cpu_ratio" : round(cpu_req / self.node_cpu_pool, 2),
+            "mem_ratio" : round(mem_req / self.node_mem_pool, 2),
             "duration": int(pod_spec[3]),
             "arrival_time": int(pod_spec[4])
         }
@@ -31,7 +36,7 @@ class Pod:
         }
 
     def is_expired(self, time):
-        if self.status["phase"] == "Running" and self.status["start_time"] + self.spec["duration"] < time:
+        if self.status["phase"] == "Running" and self.status["start_time"] + (self.spec["duration"] * 60) < time:
             if self.debug:
                 print("(Pod) Pod {} is expired".format(self.pod_name))
             return True

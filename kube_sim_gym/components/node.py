@@ -22,7 +22,7 @@ class Node:
             "running_pods": []
         }
 
-    def get_node_rsrc_util(self):
+    def get_node_rsrc_ratio(self):
         return self.status["cpu_ratio"], self.status["mem_ratio"]
 
     def alloc(self, pod, time):
@@ -31,8 +31,8 @@ class Node:
         if chk_cpu and chk_mem:
             self.status["cpu_util"] += pod.spec["cpu_req"]
             self.status["mem_util"] += pod.spec["mem_req"]
-            self.status["cpu_ratio"] = int(self.status["cpu_util"] / self.spec["cpu_pool"] * 100)
-            self.status["mem_ratio"] = int(self.status["mem_util"] / self.spec["mem_pool"] * 100)
+            self.status["cpu_ratio"] = round(self.status["cpu_util"] / self.spec["cpu_pool"], 2)
+            self.status["mem_ratio"] = round(self.status["mem_util"] / self.spec["mem_pool"], 2)
             self.status["n_pod"] += 1
             self.status["running_pods"].append(pod)
 
@@ -48,8 +48,8 @@ class Node:
     def dealloc(self, pod, time):
         self.status["cpu_util"] -= pod.spec["cpu_req"]
         self.status["mem_util"] -= pod.spec["mem_req"]
-        self.status["cpu_ratio"] = int(self.status["cpu_util"] / self.spec["cpu_pool"] * 100)
-        self.status["mem_ratio"] = int(self.status["mem_util"] / self.spec["mem_pool"] * 100)
+        self.status["cpu_ratio"] = round(self.status["cpu_util"] / self.spec["cpu_pool"], 2)
+        self.status["mem_ratio"] = round(self.status["mem_util"] / self.spec["mem_pool"], 2)
         self.status["n_pod"] -= 1
         self.status["running_pods"].remove(pod)
 

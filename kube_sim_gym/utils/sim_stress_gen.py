@@ -2,7 +2,7 @@
 # from kubernetes import client, config
 
 import os, sys
-base_path = os.path.join(os.path.dirname(__file__), "..")
+base_path = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(base_path)
 
 
@@ -10,7 +10,7 @@ sys.path.append(base_path)
 # from kube_gym.utils import monitor
 
 class SimStressGen:
-    def __init__(self, scenario_file="scenario-2023-02-27.csv", debug=False):
+    def __init__(self, scenario_file="scenario-5l-10m-1000p-60m.csv", debug=False):
         self.debug = debug
 
         self.scenario_file = scenario_file

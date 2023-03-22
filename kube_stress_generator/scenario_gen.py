@@ -2,10 +2,10 @@
 
 # Parameters
 STRESS_LEVEL_MAX = 5 # Maximum stress level
-STRESS_DURATION_MAX = 5 # minutes
+STRESS_DURATION_MAX = 10 # minutes
 STRESS_TYPE = ["cpu", "vm"] # Stress types to generate
-NUM_JOBS = 100 # Number of jobs to generate
-RUN_TIME = 10 # minutes
+NUM_JOBS = 1000 # Number of jobs to generate
+RUN_TIME = 60 # minutes
 
 
 import time, datetime
@@ -36,8 +36,8 @@ for line in scenario:
     print(line)
 
 # Write the scenario to a file
-filename = f"scenario-{datetime.date.today()}.csv"
-with open(f"./scenarios/{filename}", "w") as f:
+filename = f"scenario-{STRESS_LEVEL_MAX}l-{STRESS_DURATION_MAX}m-{NUM_JOBS}p-{RUN_TIME}m.csv"
+with open(f"../scenarios/{filename}", "w") as f:
     for line in scenario:
         f.write(f"{line[0]},{line[1]},{line[2]},{line[3]},{line[4]}\n")
 print(f"Scenario file {filename} written to ./scenarios directory")

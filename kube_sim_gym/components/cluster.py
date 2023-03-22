@@ -30,6 +30,7 @@ class Cluster:
             if pod.name == pod_name:
                 if self.debug:
                     print(f"(Cluster) Found pod {pod_name} in cluster")
+                    print(f"(Cluster) Pod spec: {pod.spec}")
                 return pod
             
     def get_node(self, node_name):
@@ -37,10 +38,11 @@ class Cluster:
             if node.node_name == node_name:
                 if self.debug:
                     print(f"(Cluster) Found node {node_name} in cluster")
+                    print(f"(Cluster) Node spec: {node.spec}")
                 return node
 
-    def queue_pod(self, pod_spec):
-        pod = Pod(pod_spec)
+    def queue_pod(self, pod_spec, node_spec):
+        pod = Pod(pod_spec, node_spec)
         if self.debug:
             print(f"(Cluster) Queuing pod {pod.pod_name}")
         self.pending_pods.append(pod)
