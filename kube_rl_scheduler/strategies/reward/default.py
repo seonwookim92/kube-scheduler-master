@@ -2,6 +2,10 @@ import numpy as np
 
 def get_reward(cluster, action, is_scheduled, time, debug=False):
 
+    # Simple reward function
+    # 1. Gives disadvantage when the pod is not scheduled.
+    # 2. Gives advantage when the pod is scheduled to the node with less utilization than average.
+
     util = {}
     for node in cluster.nodes:
         cpu_ratio, mem_ratio = node.get_node_rsrc_ratio()
@@ -13,26 +17,28 @@ def get_reward(cluster, action, is_scheduled, time, debug=False):
     # AvgUtil = mean of cpu and mem utilization of all node
     avg_cpu = round(np.mean([util[node]["cpu"] for node in util]), 2)
     avg_mem = round(np.mean([util[node]["mem"] for node in util]), 2)
-    avg_util = round((avg_cpu + avg_mem) / 2, 2)
-    if debug:
-        print(f"(Stragegy_Default) Avg CPU util: {avg_cpu}")
-        print(f"(Stragegy_Default) Avg Mem util: {avg_mem}")
-        print(f"(Stragegy_Default) Avg Util: {avg_util}")
 
-    # ImBalance = summation of standard deviation of each resource in all nodes
-    std_cpu = round(np.std([util[node]["cpu"] for node in util]), 2)
-    std_mem = round(np.std([util[node]["mem"] for node in util]), 2)
-    imbalance = round(std_cpu + std_mem, 2)
-    if debug:
-        print(f"(Stragegy_Default) Std CPU util: {std_cpu}")
-        print(f"(Stragegy_Default) Std Mem util: {std_mem}")
-        print(f"(Stragegy_Default) Imbalance: {imbalance}")
 
-    # Reward = a*AvgUtil - b*ImBalance
-    a = 10
+    # Compare the selected node's utilization with the mean utilization
+    # If the selected node's utilization is less than the mean utilization, give advantage
+    is_cpu_less_than_avg = util[cluster.nodes[action - 1].node_name]["cpu"] < avg_cpu if is_scheduled else False
+    is_mem_less_than_avg = util[cluster.nodes[action - 1].node_name]["mem"] < avg_mem if is_scheduled else False
+
+    # If the pending pod is just listed, do not give disadvantage
+    if cluster.pending_pods:
+        if cluster.pending_pods[0].spec['arrival_time'] == time:
+            is_scheduled = True
+    if action == 0:
+        is_scheduled = True
+
+    # Reward = a * is_scheduled + b * is_cpu_less_than_avg + c * is_mem_less_than_avg
+    a = -5
     b = 1
-    reward = round(a * avg_util - b * imbalance, 2)
+    c = 1
+
+    reward = a * (not is_scheduled) + b * is_cpu_less_than_avg + c * is_mem_less_than_avg
+    reward = round(reward, 2)
     if debug:
-        print(f"(Stragegy_Default) Reward: {reward}")
+        print(f"(Default) Reward: {reward}")
 
     return reward

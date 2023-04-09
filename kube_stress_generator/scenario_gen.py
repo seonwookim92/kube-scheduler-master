@@ -1,11 +1,15 @@
 # scenario_gen.py : Generate a scenario file to generate a sequence of stressors
 
+import os
+
+base_path = os.path.join(os.path.dirname(__file__), "..")
+
 # Parameters
-STRESS_LEVEL_MAX = 5 # Maximum stress level
-STRESS_DURATION_MAX = 10 # minutes
+STRESS_LEVEL_MAX = 10 # Maximum stress level
+STRESS_DURATION_MAX = 3 # minutes
 STRESS_TYPE = ["cpu", "vm"] # Stress types to generate
-NUM_JOBS = 1000 # Number of jobs to generate
-RUN_TIME = 60 # minutes
+NUM_JOBS = 10000 # Number of jobs to generate
+RUN_TIME = 100 # minutes
 
 
 import time, datetime
@@ -37,7 +41,7 @@ for line in scenario:
 
 # Write the scenario to a file
 filename = f"scenario-{STRESS_LEVEL_MAX}l-{STRESS_DURATION_MAX}m-{NUM_JOBS}p-{RUN_TIME}m.csv"
-with open(f"../scenarios/{filename}", "w") as f:
+with open(os.path.join(base_path,f"scenarios/{filename}"), "w") as f:
     for line in scenario:
         f.write(f"{line[0]},{line[1]},{line[2]},{line[3]},{line[4]}\n")
 print(f"Scenario file {filename} written to ./scenarios directory")

@@ -12,12 +12,13 @@ from kube_sim_gym.utils.sim_stress_gen import SimStressGen
 
 # Simulate kubernetes node and pods with cpu, memory resources
 class SimKubeEnv(gym.Env):
-    def __init__(self, strategy_file="default.py", scenario_file="scenario-5l-10m-1000p-60m.csv", n_node=5, cpu_pool=50000, mem_pool=50000, debug=None):
+    def __init__(self, reward_file="try.py", scenario_file="scenario-5l-10m-1000p-60m.csv", n_node=5, cpu_pool=50000, mem_pool=50000, debug=None):
         # self.debug = True if debug == None else debug
-        self.debug = True
+        self.debug = False
 
-        # Strategy
-        self.strategy = strategy_file
+        # reward
+        self.reward_file = reward_file
+        self.reward_fn_name = os.path.splitext(self.reward_file)[0]
 
         self.stress_gen = SimStressGen(scenario_file, self.debug)
         
@@ -44,11 +45,12 @@ class SimKubeEnv(gym.Env):
             'is_scheduled' : None
         }
 
+        reward_module_path = os.path.join(f"kube_{self.scheduler_type}_scheduler", "strategies", "reward", self.reward_fn_name).replace('/', '.')
+        self.reward_fn = importlib.import_module(reward_module_path)
+
     def get_reward(self, cluster, action, is_scheduled, time):
 
-        strategy_module_path = os.path.join(f"kube_{self.scheduler_type}_scheduler", "strategies", "reward", os.path.splitext(self.strategy)[0]).replace('/', '.')
-        strategy = importlib.import_module(strategy_module_path)
-        reward = strategy.get_reward(cluster, action, is_scheduled, time, self.debug)
+        reward = self.reward_fn.get_reward(cluster, action, is_scheduled, time, self.debug)
 
         return reward
 
@@ -82,9 +84,6 @@ class SimKubeEnv(gym.Env):
             self.done = False
         return self.done
 
-        
-
-
     def step(self, action):
         self.time += 1
         is_scheduled = None
@@ -105,12 +104,17 @@ class SimKubeEnv(gym.Env):
 
 
         # Do action
-        if self.cluster.pending_pods:
-            deploy_node = self.cluster.get_node(self.action_map[str(action)])
+        pending_pods = self.cluster.pending_pods
+
+        if pending_pods:
+            try:
+                deploy_node = self.cluster.get_node(self.action_map[str(action)])
+            except:
+                deploy_node = None
             if deploy_node:
                 if self.debug:
                     print(f"(SimKubeEnv) Deploying pod to node {deploy_node.node_name}")
-                pending_pod = self.cluster.pending_pods[0]
+                pending_pod = pending_pods[0]
                 is_scheduled = self.cluster.deploy_pod(pending_pod, deploy_node, self.time)
                 if is_scheduled:
                     if self.debug:

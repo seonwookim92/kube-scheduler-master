@@ -28,7 +28,7 @@ class Pod:
             "arrival_time": int(pod_spec[4])
         }
         self.status = {
-            "phase": None, # Pending, Running, Succeeded, Failed, Unknown
+            "phase": None, # Pending, Running, Succeeded
             "node_idx": None,
             "node_name": None,
             "start_time": None,
