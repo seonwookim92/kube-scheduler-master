@@ -27,7 +27,7 @@ class Cluster:
     def get_pod(self, pod_name):
         all_pods = self.pending_pods + self.running_pods + self.terminated_pods
         for pod in all_pods:
-            if pod.name == pod_name:
+            if pod.pod_name == pod_name:
                 if self.debug:
                     print(f"(Cluster) Found pod {pod_name} in cluster")
                     print(f"(Cluster) Pod spec: {pod.spec}")

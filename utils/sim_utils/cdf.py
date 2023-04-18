@@ -10,13 +10,18 @@ from kube_rl_scheduler.scheduler.sim_rl_scheduler import SimRlScheduler
 from kube_hr_scheduler.scheduler.sim_hr_scheduler import SimHrScheduler
 from kube_sim_gym.envs.sim_kube_env import SimKubeEnv
 
-env = gym.make('SimKubeEnv-v0', reward_file="try.py", scenario_file="scenario-10l-3m-10000p-100m.csv")
+env = gym.make('SimKubeEnv-v0', reward_file="try.py", scenario_file="scenario-10l-3m-1000p-10m.csv")
 
 hr_scheduler_default = SimHrScheduler(env, model_fname='default.py')
 hr_scheduler_random = SimHrScheduler(env, model_fname='random.py')
 hr_scheduler_roundRobin = SimHrScheduler(env, model_fname='roundRobin.py')
-
-rl_scheduler_ppo = SimRlScheduler(env, model_fname='ppo_1st.zip')
+rl_scheduler_ppo = SimRlScheduler(env, model_fname='PPO_1M.zip')
+scheduler = {
+    'hr_default': hr_scheduler_default,
+    'hr_random': hr_scheduler_random,
+    'hr_roundRobin': hr_scheduler_roundRobin,
+    'rl_ppo': rl_scheduler_ppo
+}
 
 # Collect data for each scheduler regarding the number of pods scheduled at each time step
 cdf = {
@@ -34,7 +39,7 @@ for key in cdf.keys():
 
     env.reset()
     while not env.get_done():
-        env.step(hr_scheduler_default.decision(env))
+        env.step(scheduler[key].decision(env))
         cdf[key].append(get_num_pods_scheduled(env))
 
     env.reset()

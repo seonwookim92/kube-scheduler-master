@@ -33,7 +33,7 @@ class RealHrScheduler:
 
         self.model_name = model_fname.split('.')[0]
         model_path = os.path.join("kube_hr_scheduler", "strategies", "model", self.model_name).replace("/", ".")
-        self.model = importlib.import_module(model_path).Model()
+        self.model = importlib.import_module(model_path).Model(self.env)
         # self.strategy = strategy
 
     def decision(self, env, debug=False):

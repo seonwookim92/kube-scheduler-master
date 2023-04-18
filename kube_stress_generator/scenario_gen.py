@@ -8,8 +8,8 @@ base_path = os.path.join(os.path.dirname(__file__), "..")
 STRESS_LEVEL_MAX = 10 # Maximum stress level
 STRESS_DURATION_MAX = 3 # minutes
 STRESS_TYPE = ["cpu", "vm"] # Stress types to generate
-NUM_JOBS = 10000 # Number of jobs to generate
-RUN_TIME = 100 # minutes
+NUM_JOBS = 1000 # Number of jobs to generate
+RUN_TIME = 10 # minutes
 
 
 import time, datetime

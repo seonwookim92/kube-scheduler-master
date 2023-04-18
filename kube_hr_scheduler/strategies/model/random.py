@@ -1,7 +1,7 @@
 import random
 
 class Model:
-    def __init__(self):
+    def __init__(self, env=None):
         pass
 
     def predict(self, env):

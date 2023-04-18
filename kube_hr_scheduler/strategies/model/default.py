@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 class Model:
-    def __init__(self):
+    def __init__(self, env=None):
         pass
 
     def predict(self, env):

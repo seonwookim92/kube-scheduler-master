@@ -1,7 +1,7 @@
 import random
 
 class Model:
-    def __init__(self):
+    def __init__(self, env=None):
         self.last_node_scheduled = -1
 
     def predict(self, env):
