@@ -8,6 +8,7 @@ base_path = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(base_path)
 
 from kube_sim_gym.components.cluster import Cluster
+from kube_sim_gym.components.pod import Pod
 from kube_sim_gym.utils.sim_stress_gen import SimStressGen
 
 # Simulate kubernetes node and pods with cpu, memory resources
@@ -47,6 +48,55 @@ class SimKubeEnv(gym.Env):
 
         reward_module_path = os.path.join(f"kube_{self.scheduler_type}_scheduler", "strategies", "reward", self.reward_fn_name).replace('/', '.')
         self.reward_fn = importlib.import_module(reward_module_path)
+
+    def random_state_gen(self):
+        """
+        This is a extra function to generate random state for data generation.\n
+        Do not use it in normal situation, it will screw up the cluster.
+        """
+        no_pod_thres = 0.8
+        no_pod_prob = np.random.random()
+        # Randomly generate state
+        # Node state can be in range 0 to 1 (rounded to 2 decimal places)
+        cpu_pool = self.cluster.nodes[0].spec['cpu_pool']
+        mem_pool = self.cluster.nodes[0].spec['mem_pool']
+
+        state = []
+        for node in self.cluster.nodes:
+            node_cpu_ratio = round(np.random.uniform(0, 1), 2)
+            node_mem_ratio = round(np.random.uniform(0, 1), 2)
+            state += [node_cpu_ratio, node_mem_ratio]
+
+        # Pending pod state can be in range 0 to 1 (rounded to 2 decimal places)
+        if no_pod_prob < no_pod_thres:
+            pending_pod_cpu_ratio = round(np.random.uniform(0, 0.5), 2)
+            pending_pod_mem_ratio = round(np.random.uniform(0, 0.5), 2)
+            state += [pending_pod_cpu_ratio, pending_pod_mem_ratio]
+        else:
+            state += [0, 0]
+        
+        # Update cluster
+        self.reset()
+
+        for i in range(self.n_node):
+            self.cluster.nodes[i].status['cpu_ratio'] = state[i * 2]
+            self.cluster.nodes[i].status['mem_ratio'] = state[i * 2 + 1]
+            self.cluster.nodes[i].status['cpu_util'] = state[i * 2] * cpu_pool
+            self.cluster.nodes[i].status['mem_util'] = state[i * 2 + 1] * mem_pool
+
+        self.cluster.pending_pods = []
+
+        if no_pod_prob < no_pod_thres:
+            pod = Pod([0,'cpu',0,0,0], {"cpu_pool":cpu_pool, "mem_pool":mem_pool}, self.debug)
+            
+            pod.spec['cpu_req'] = state[self.n_node * 2] * cpu_pool
+            pod.spec['mem_req'] = state[self.n_node * 2 + 1] * mem_pool
+
+            self.cluster.pending_pods.append(pod)
+
+        return np.array(state, dtype=np.float32)
+
+
 
     def get_reward(self, cluster, action, is_scheduled, time):
 

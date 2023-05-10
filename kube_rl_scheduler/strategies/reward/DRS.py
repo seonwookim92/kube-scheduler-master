@@ -29,7 +29,7 @@ def get_reward(cluster, action, is_scheduled, time, debug=False):
         print(f"(Stragegy_Default) Imbalance: {imbalance}")
 
     # Reward = a*AvgUtil - b*ImBalance
-    a = 10
+    a = 1
     b = 1
     reward = round(a * avg_util - b * imbalance, 2)
     if debug:

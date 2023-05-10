@@ -9,6 +9,22 @@ class Model:
         available_actions = self.get_available_actions(env)
         prioritized_actions = self.prioritize_actions(env, available_actions)
         return prioritized_actions[0]
+    
+    def get_confidence(self, env):
+        score = {}
+        # If there is no pending pod, the confidence for action 0 is 1
+        if not env.cluster.pending_pods:
+            score[0] = 1
+            for idx, action in enumerate([1, 2, 3, 4, 5]):
+                score[action] = 0
+        else:
+            score[0] = 0
+            for idx, action in enumerate([1, 2, 3, 4, 5]):
+                score[action] = self.scoring_action(env, action)
+
+        # Return array
+        confidence = np.array([score[0], score[1], score[2], score[3], score[4], score[5]])
+        return confidence
 
     def get_available_actions(self, env):
         if not env.cluster.pending_pods:
